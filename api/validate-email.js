@@ -1,10 +1,17 @@
 export default async function handler(req, res) {
-  const email = req.query.email;
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  const email = req.query.email;
   if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
     return res.status(400).json({ error: 'Invalid or missing email' });
   }
-
   const apiKey = process.env.ZEROBOUNCE_API_KEY;
 
   const apiUrl = `https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${encodeURIComponent(email)}`;
